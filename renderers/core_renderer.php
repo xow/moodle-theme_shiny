@@ -17,12 +17,12 @@
 /**
  * Renderers to align Moodle's HTML with that expected by Bootstrap
  *
- * @package    theme_bootstrapbase
+ * @package    theme_shiny
  * @copyright  2012 Bas Brands, www.basbrands.nl
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class theme_bootstrapbase_core_renderer extends core_renderer {
+class theme_shiny_core_renderer extends core_renderer {
 
     /** @var custom_menu_item language The language menu if created */
     protected $language = null;
@@ -257,9 +257,9 @@ class theme_bootstrapbase_core_renderer extends core_renderer {
  * We override it in order to style those scenarios consistently with the regular
  * bootstrap look and feel.
  *
- * @package    theme_bootstrapbase
+ * @package    theme_shiny
  * @copyright  2014 Sam Hemelryk
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class theme_bootstrapbase_core_renderer_maintenance extends core_renderer_maintenance {
+class theme_shiny_core_renderer_maintenance extends core_renderer_maintenance {
 }

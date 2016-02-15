@@ -23,7 +23,7 @@
  * For full information about creating Moodle themes, see:
  * http://docs.moodle.org/dev/Themes_2.0
  *
- * @package   theme_bootstrapbase
+ * @package   theme_shiny
  * @copyright 2013 Bas Brands. www.sonsbeekmedia.nl
  * @author    Bas Brands
  * @author    David Scotson
@@ -32,7 +32,7 @@
 
 $THEME->doctype = 'html5';
 $THEME->yuicssmodules = array();
-$THEME->name = 'bootstrapbase';
+$THEME->name = 'shiny';
 $THEME->parents = array();
 $THEME->sheets = array('moodle');
 $THEME->supportscssoptimisation = false;

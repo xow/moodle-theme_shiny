@@ -17,17 +17,17 @@
 /**
  * Strings for component 'theme_bootstrap', language 'en', branch 'MOODLE_23_STABLE'
  *
- * @package   theme_bootstrapbase
+ * @package   theme_shiny
  * @copyright 2012 Bas Brands, www.basbrands.nl
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Bootstrap Base';
+$string['pluginname'] = 'Shiny';
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
 
 $string['choosereadme'] = '
-<div class="clearfix"><div class="theme_screenshot"><h2>Bootstrap Base</h2>
+<div class="clearfix"><div class="theme_screenshot"><h2>Shiny</h2>
 <img class=img-polaroid src="bootstrap/pix/screenshot.jpg" />
 <h3>Theme Credits</h3>
 <p>

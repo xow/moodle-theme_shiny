@@ -17,7 +17,7 @@ To update to the latest release of twitter bootstrap:
 
 ** If you want to make changes to the .css generated from these .less files then you
 need to install recess (https://github.com/twitter/recess) to compile the .less files,
-then run these commands in the bootstrapbase/less/ folder:
+then run these commands in the shiny/less/ folder:
 
 bootstrap.js
 ------------

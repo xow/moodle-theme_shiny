@@ -17,7 +17,7 @@
 /**
  * Theme version info
  *
- * @package    theme_bootstrapbase
+ * @package    theme_shiny
  * @copyright  2013 Bas Brands, www.basbrands.nl
  * @author     Bas Brands
  * @author     David Scotson
@@ -28,4 +28,4 @@ defined('MOODLE_INTERNAL') || die;
 
 $plugin->version   = 2015111600;
 $plugin->requires  = 2015111000;
-$plugin->component = 'theme_bootstrapbase';
+$plugin->component = 'theme_shiny';

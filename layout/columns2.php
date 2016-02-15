@@ -17,7 +17,7 @@
 /**
  * A two column layout for the Bootstrapbase theme.
  *
- * @package   theme_bootstrapbase
+ * @package   theme_shiny
  * @copyright 2012 Bas Brands, www.basbrands.nl
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

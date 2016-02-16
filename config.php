@@ -159,3 +159,6 @@ $THEME->layouts = array(
         'defaultregion' => 'side-pre'
     ),
 );
+$THEME->javascripts_footer = array(
+    'hamburger'
+);

@@ -10,6 +10,9 @@ body {
     border: none;
     .box-shadow(0 1px 4px 0 rgba(0,0,0,0.14))
 }
+
+// Nav bar.
+
 .navbar-inner {
     background-image: none;
     background-color: #f98012;
@@ -19,9 +22,30 @@ body {
     color: #FFF;
     font-size: 2.2em;
 }
-.navbar-inner {
-    padding: 6px;
+.usermenu .moodle-actionmenu .toggle-display .userbutton .usertext {
+    color: #FFF;
+    font-size: 1.4em;
 }
+.navbar-inner .hamburger {
+    color: #FFF;
+    font-size: 2.2em;
+    float: left;
+    margin-top: 0.2em;
+    margin-right: 0.5em;
+}
+.jsenabled .moodle-actionmenu[data-enhance] .toggle-display.textmenu .caret {
+    border-top-color: #FFF;
+}
+
+.navbar-fixed-top .navbar-inner {
+    padding: 0.8em;
+    box-shadow: 0 1px 10px rgba(0,0,0,.2);
+}
+
+.jsenabled .usermenu .moodle-actionmenu.show {
+    background-color: #FF9230;
+}
+
 #block-region-side-pre {
     color: #666;
     font-size: 1.2em
@@ -43,6 +67,7 @@ body {
         display: none;
     }
     padding: 8px 0px;
+    float: left;
 }
 
 .notblock {
@@ -55,14 +80,19 @@ body {
     .well;
     padding-left: 3em;
     padding-right: 3em;
-}
-
-.usermenu .moodle-actionmenu .toggle-display .userbutton .usertext {
-    color: #FFF;
-    font-size: 1.4em;
+    transition: height 1s;
+    transition: width 1s;
 }
 
 .userpicture {
     border-radius: 50%;
 }
 
+aside.collapsable {
+    position: absolute;
+    left: 0%;
+    transition: left 1s;
+}
+aside.collapsable.collapsed {
+    left: -23.40425532%;
+}

@@ -26,12 +26,12 @@
 $html = theme_shiny_get_html_for_settings($OUTPUT, $PAGE);
 
 // Set default (LTR) layout mark-up for a two column page (side-pre-only).
-$regionmain = 'span9 pull-right';
-$sidepre = 'span3 desktop-first-column';
+$regionmain = 'span12 pull-right';
+$sidepre = 'span3 desktop-first-column collapsable collapsed';
 // Reset layout mark-up for RTL languages.
 if (right_to_left()) {
-    $regionmain = 'span9';
-    $sidepre = 'span3 pull-right';
+    $regionmain = 'span12';
+    $sidepre = 'span3 collapsable collapsed pull-right';
 }
 
 echo $OUTPUT->doctype() ?>
@@ -50,6 +50,7 @@ echo $OUTPUT->doctype() ?>
 <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
     <nav role="navigation" class="navbar-inner">
         <div class="container-fluid">
+            <a href="#" class="hamburger" id="navbar-hamburger"><i class="fa fa-bars"></i></a>
             <?php echo $OUTPUT->navbar_home(); ?>
             <?php echo $OUTPUT->navbar_button(); ?>
             <?php echo $OUTPUT->user_menu(); ?>

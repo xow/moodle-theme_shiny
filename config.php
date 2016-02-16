@@ -46,3 +46,5 @@ $THEME->editor_sheets = array();
 
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
 $THEME->csspostprocess = 'theme_shiny_process_css';
+
+$THEME->lessfile = 'styles';

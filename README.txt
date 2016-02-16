@@ -10,8 +10,8 @@ of HTML and CSS.
 Getting started
 ---------------
 
-From your Moodle theme directory right click on clean and then copy and paste back
-into your Moodle theme directory. You should now have a folder called Copy of clean.
+From your Moodle theme directory right click on shiny and then copy and paste back
+into your Moodle theme directory. You should now have a folder called Copy of shiny.
 If you right click this folder you are given the option to Rename it. So rename this
 folder to your chosen theme name, using only lower case letters, and if needed,
 underscores. For the purpose of this tutorial we will call the theme 'cleantheme'.
@@ -38,7 +38,7 @@ version.php
     if and when you want to add them.
 /lang/en/
     This sub-directory contains your language files, in this case English.
-/lang/en/theme_clean.php
+/lang/en/theme_shiny.php
     This file contains all the language strings for your theme.
     (Contains some elements that require renaming as well as the filename itself).
 /layout/
@@ -73,10 +73,10 @@ Renaming elements
 -----------------
 
 The problem when copying a theme is that you need to rename all those instances
-where the old theme name occurs, in this case clean. So using the above list as
+where the old theme name occurs, in this case shiny. So using the above list as
 a guide, search through and change all the instances of the theme name
-'clean' to 'cleantheme'. This includes the filename of the lang/en/theme_clean.php.
-You need to change this to 'theme_cleantheme.php'.
+'shiny' to 'cleantheme'. This includes the filename of the lang/en/theme_shiny.php.
+You need to change this to 'theme_shinytheme.php'.
 
 Installing your theme
 ---------------------

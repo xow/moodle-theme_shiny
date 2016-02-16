@@ -23,7 +23,7 @@
  * For full information about creating Moodle themes, see:
  * http://docs.moodle.org/dev/Themes_2.0
  *
- * @package    theme_clean
+ * @package    theme_shiny
  * @copyright  2013 Moodle, moodle.org
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die;
 
 $plugin->version   = 2015111601;
 $plugin->requires  = 2015111000;
-$plugin->component = 'theme_clean';
+$plugin->component = 'theme_shiny';
 $plugin->dependencies = array(
     'theme_bootstrapbase'  => 2015111000,
 );

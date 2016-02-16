@@ -23,7 +23,7 @@
  * For full information about creating Moodle themes, see:
  * http://docs.moodle.org/dev/Themes_2.0
  *
- * @package   theme_clean
+ * @package   theme_shiny
  * @copyright 2013 Moodle, moodle.org
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,50 +33,50 @@ defined('MOODLE_INTERNAL') || die;
 if ($ADMIN->fulltree) {
 
     // Invert Navbar to dark background.
-    $name = 'theme_clean/invert';
-    $title = get_string('invert', 'theme_clean');
-    $description = get_string('invertdesc', 'theme_clean');
+    $name = 'theme_shiny/invert';
+    $title = get_string('invert', 'theme_shiny');
+    $description = get_string('invertdesc', 'theme_shiny');
     $setting = new admin_setting_configcheckbox($name, $title, $description, 0);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
     // Logo file setting.
-    $name = 'theme_clean/logo';
-    $title = get_string('logo','theme_clean');
-    $description = get_string('logodesc', 'theme_clean');
+    $name = 'theme_shiny/logo';
+    $title = get_string('logo','theme_shiny');
+    $description = get_string('logodesc', 'theme_shiny');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'logo');
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
     // Small logo file setting.
-    $name = 'theme_clean/smalllogo';
-    $title = get_string('smalllogo', 'theme_clean');
-    $description = get_string('smalllogodesc', 'theme_clean');
+    $name = 'theme_shiny/smalllogo';
+    $title = get_string('smalllogo', 'theme_shiny');
+    $description = get_string('smalllogodesc', 'theme_shiny');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'smalllogo');
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
     // Show site name along with small logo.
-    $name = 'theme_clean/sitename';
-    $title = get_string('sitename', 'theme_clean');
-    $description = get_string('sitenamedesc', 'theme_clean');
+    $name = 'theme_shiny/sitename';
+    $title = get_string('sitename', 'theme_shiny');
+    $description = get_string('sitenamedesc', 'theme_shiny');
     $setting = new admin_setting_configcheckbox($name, $title, $description, 1);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
     // Custom CSS file.
-    $name = 'theme_clean/customcss';
-    $title = get_string('customcss', 'theme_clean');
-    $description = get_string('customcssdesc', 'theme_clean');
+    $name = 'theme_shiny/customcss';
+    $title = get_string('customcss', 'theme_shiny');
+    $description = get_string('customcssdesc', 'theme_shiny');
     $default = '';
     $setting = new admin_setting_configtextarea($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
 
     // Footnote setting.
-    $name = 'theme_clean/footnote';
-    $title = get_string('footnote', 'theme_clean');
-    $description = get_string('footnotedesc', 'theme_clean');
+    $name = 'theme_shiny/footnote';
+    $title = get_string('footnote', 'theme_shiny');
+    $description = get_string('footnotedesc', 'theme_shiny');
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');

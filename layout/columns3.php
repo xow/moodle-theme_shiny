@@ -23,13 +23,13 @@
  * For full information about creating Moodle themes, see:
  * http://docs.moodle.org/dev/Themes_2.0
  *
- * @package   theme_clean
+ * @package   theme_shiny
  * @copyright 2013 Moodle, moodle.org
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Get the HTML for the settings bits.
-$html = theme_clean_get_html_for_settings($OUTPUT, $PAGE);
+$html = theme_shiny_get_html_for_settings($OUTPUT, $PAGE);
 
 // Set default (LTR) layout mark-up for a three column page.
 $regionmainbox = 'span9';

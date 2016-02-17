@@ -128,6 +128,28 @@ class theme_shiny_core_renderer extends theme_bootstrapbase_core_renderer {
 
         return html_writer::tag('span', $sitename, array('class' => 'brand'));
     }
+    public function settings_fab() {
+        global $SITE;
+        if ($this->page->course->id == $SITE->id) {
+            $editurl = new moodle_url('/course/view.php', array('id'=>$this->page->course->id, 'sesskey'=>sesskey()));
+        } else {
+            $editurl = clone($this->page->url);
+        }
+        $icon = "cog";
+        $editurl->param('sesskey', sesskey());
+        if ($this->page->user_is_editing()) {
+            $editurl->param('edit', 'off');
+            $editstring = get_string('turneditingoff');
+            $icon = "check";
+        } else {
+            $editurl->param('edit', 'on');
+            $editstring = get_string('turneditingon');
+        }
+        return '<a href="' . $editurl->out() . '" class="settings" id="navbar-settings"><i class="fa fa-' . $icon . '"></i></a>';
+    }
+    public function edit_button(moodle_url $url) {
+        return '';
+    }
 }
 
 require_once($CFG->dirroot . "/blocks/settings/renderer.php");

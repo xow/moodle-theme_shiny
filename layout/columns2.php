@@ -63,6 +63,7 @@ echo $OUTPUT->doctype() ?>
         </div>
     </nav>
 </header>
+<?php echo $OUTPUT->settings_fab(); ?>
 
 <div id="page" class="container-fluid">
     <?php echo $OUTPUT->full_header(); ?>

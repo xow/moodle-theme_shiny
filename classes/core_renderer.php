@@ -129,3 +129,28 @@ class theme_shiny_core_renderer extends theme_bootstrapbase_core_renderer {
         return html_writer::tag('span', $sitename, array('class' => 'brand'));
     }
 }
+
+require_once($CFG->dirroot . "/blocks/settings/renderer.php");
+
+/**
+ * Override the settings block renderers
+ *
+ * @package    theme_shiny
+ * @copyright  2016 John Okely <john@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class theme_shiny_block_settings_renderer extends block_settings_renderer {
+    public function settings_tree(settings_navigation $navigation) {
+        global $PAGE;
+        if ($PAGE->pagelayout == 'admin') {
+            return block_settings_renderer::settings_tree($navigation);
+        }
+        $data = new stdClass();
+        $data->siteadminlink = new moodle_url('/admin/index.php');
+        return $this->render_from_template('block_settings/administration_link', $data);
+    }
+    public function search_form(moodle_url $formtarget, $searchvalue) {
+        return '';
+    }
+
+}

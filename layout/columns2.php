@@ -27,11 +27,11 @@ $html = theme_shiny_get_html_for_settings($OUTPUT, $PAGE);
 
 // Set default (LTR) layout mark-up for a two column page (side-pre-only).
 $regionmain = 'span12 pull-right';
-$sidepre = 'span3 desktop-first-column collapsable collapsed';
+$sidepre = 'desktop-first-column collapsable collapsed';
 // Reset layout mark-up for RTL languages.
 if (right_to_left()) {
     $regionmain = 'span12';
-    $sidepre = 'span3 collapsable collapsed pull-right';
+    $sidepre = 'collapsable collapsed pull-right';
 }
 
 echo $OUTPUT->doctype() ?>

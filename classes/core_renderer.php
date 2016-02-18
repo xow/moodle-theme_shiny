@@ -20,7 +20,7 @@ require_once($CFG->dirroot . '/theme/bootstrapbase/renderers.php');
  * Clean core renderers.
  *
  * @package    theme_shiny
- * @copyright  2015 Frédéric Massart - FMCorz.net
+ * @copyright  2016 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class theme_shiny_core_renderer extends theme_bootstrapbase_core_renderer {
@@ -165,14 +165,26 @@ class theme_shiny_block_settings_renderer extends block_settings_renderer {
     public function settings_tree(settings_navigation $navigation) {
         global $PAGE;
         if ($PAGE->pagelayout == 'admin') {
-            return $this->tree_siblings_only($navigation);
+            $count = 0;
+            foreach ($navigation->children as &$child) {
+                $child->preceedwithhr = ($count!==0);
+                if ($child->display) {
+                    $count++;
+                }
+            }
+            $navigationattrs = array(
+                'class' => 'block_tree list',
+                'role' => 'tree',
+                'data-ajax-loader' => 'block_navigation/site_admin_loader');
+            $content = $this->navigation_node($navigation, $navigationattrs);
+            if (isset($navigation->id) && !is_numeric($navigation->id) && !empty($content)) {
+                $content = $this->output->box($content, 'block_tree_box', $navigation->id);
+            }
+            return $content;
         }
         $data = new stdClass();
         $data->siteadminlink = new moodle_url('/admin/index.php');
         return $this->render_from_template('block_settings/administration_link', $data);
-    }
-    private function tree_siblings_only(settings_navigation $navigation) {
-        return block_settings_renderer::settings_tree($navigation);;
     }
     public function search_form(moodle_url $formtarget, $searchvalue) {
         global $PAGE;
@@ -181,5 +193,539 @@ class theme_shiny_block_settings_renderer extends block_settings_renderer {
         } else {
             return '';
         }
+    }
+}
+class theme_shiny_block_settings_renderer2 extends block_settings_renderer {
+    protected function active_family(navigation_node $navigation) {
+        $items = $navigation->children;
+        if ($this->is_one_or_child_active($items)) {
+            // Render these only.
+            return $this->navigation_node($navigation);
+        } else {
+            // Keep going recursively
+            $content = '';
+            foreach ($items as $item) {
+                $content .= $this->active_family($item);
+            }
+            return $content;
+        }
+    }
+    private function is_one_or_child_active($items) {
+        if ($this->is_one_active($items)) {
+            return true;
+        }
+        foreach ($items as $item) {
+            if ($this->is_one_active($item->children)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private function is_one_active($items) {
+        foreach ($items as $item) {
+            if ($item->isactive) {
+                return true;
+            }
+        }
+        return false;
+    }
+    protected function navigation_node(navigation_node $node, $attrs=array(), $depth = 1) {
+        $items = $node->children;
+
+        // exit if empty, we don't want an empty ul element
+        if ($items->count()==0) {
+            return '';
+        }
+
+        // array of nested li elements
+        $lis = array();
+        $number = 0;
+        foreach ($items as $item) {
+            $number++;
+            if (!$item->display) {
+                continue;
+            }
+
+            $isbranch = ($item->children->count()>0  || $item->nodetype==navigation_node::NODETYPE_BRANCH);
+            $hasicon = (!$isbranch && $item->icon instanceof renderable);
+
+            if ($isbranch) {
+                $item->hideicon = true;
+            }
+            $content = $this->output->render($item);
+
+            // this applies to the li item which contains all child lists too
+            $liclasses = array($item->get_css_type());
+            $liexpandable = array();
+            if ($isbranch) {
+                $liclasses[] = 'contains_branch';
+                if (!$item->forceopen || (!$item->forceopen && $item->collapse) || ($item->children->count() == 0
+                        && $item->nodetype == navigation_node::NODETYPE_BRANCH)) {
+                    $liexpandable = array('aria-expanded' => 'false');
+                } else {
+                    $liexpandable = array('aria-expanded' => 'true');
+                }
+                if ($item->requiresajaxloading) {
+                    $liexpandable['data-requires-ajax'] = 'true';
+                    $liexpandable['data-loaded'] = 'false';
+                }
+
+            } else if ($hasicon) {
+                $liclasses[] = 'item_with_icon';
+            }
+            if ($item->isactive === true) {
+                $liclasses[] = 'current_branch';
+            }
+            $nodetextid = 'label_' . $depth . '_' . $number;
+            $liattr = array('class' => join(' ', $liclasses), 'tabindex' => '-1', 'role' => 'treeitem') + $liexpandable;
+            // class attribute on the div item which only contains the item content
+            $divclasses = array('tree_item');
+            if ($isbranch) {
+                $divclasses[] = 'branch';
+            } else {
+                $divclasses[] = 'leaf';
+            }
+            if (!empty($item->classes) && count($item->classes)>0) {
+                $divclasses[] = join(' ', $item->classes);
+            }
+            $divattr = array('class'=>join(' ', $divclasses));
+            if (!empty($item->id)) {
+                $divattr['id'] = $item->id;
+            }
+            $content = html_writer::tag('p', $content, $divattr) . $this->navigation_node($item, array(), $depth + 1);
+            if (!empty($item->preceedwithhr) && $item->preceedwithhr===true) {
+                $content = html_writer::empty_tag('hr') . $content;
+            }
+            $liattr['aria-labelledby'] = $nodetextid;
+            $content = html_writer::tag('li', $content, $liattr);
+            if ($node->contains_active_node()) {
+                $lis[] = $content;
+            }
+        }
+
+        if (count($lis)) {
+            if (empty($attrs['role'])) {
+                $attrs['role'] = 'group';
+            }
+            return html_writer::tag('ul', implode("\n", $lis), $attrs);
+        } else {
+            return '';
+        }
+    }
+}
+
+require_once($CFG->dirroot . "/blocks/navigation/renderer.php");
+
+class theme_shiny_block_navigation_renderer extends block_navigation_renderer {
+    /**
+     * Returns the content of the navigation tree.
+     *
+     * @param global_navigation $navigation
+     * @param int $expansionlimit
+     * @param array $options
+     * @return string $content
+     */
+    public function navigation_tree(global_navigation $navigation, $expansionlimit, array $options = array()) {
+        $navigation->add_class('navigation_node');
+        $navigationattrs = array(
+            'class' => 'block_tree list',
+            'role' => 'tree',
+            'data-ajax-loader' => 'block_navigation/nav_loader');
+        $content = $this->navigation_node(array($navigation), $navigationattrs, $expansionlimit, $options);
+        if (isset($navigation->id) && !is_numeric($navigation->id) && !empty($content)) {
+            $content = $this->output->box($content, 'block_tree_box', $navigation->id);
+        }
+        return $content;
+    }
+    /**
+     * Produces a navigation node for the navigation tree
+     *
+     * @param navigation_node[] $items
+     * @param array $attrs
+     * @param int $expansionlimit
+     * @param array $options
+     * @param int $depth
+     * @return string
+     */
+    protected function navigation_node($items, $attrs=array(), $expansionlimit=null, array $options = array(), $depth=1) {
+        // Exit if empty, we don't want an empty ul element.
+        if (count($items) === 0) {
+            return '';
+        }
+
+        // Turn our navigation items into list items.
+        $lis = array();
+        $number = 0;
+        foreach ($items as $item) {
+            $number++;
+            if (!$item->display && !$item->contains_active_node()) {
+                continue;
+            }
+            $content = $item->get_content();
+            $title = $item->get_title();
+
+            $isexpandable = (empty($expansionlimit) || ($item->type > navigation_node::TYPE_ACTIVITY || $item->type < $expansionlimit) || ($item->contains_active_node() && $item->children->count() > 0));
+            $isbranch = $isexpandable && ($item->children->count() > 0 || ($item->has_children() && (isloggedin() || $item->type <= navigation_node::TYPE_CATEGORY)));
+
+            // Skip elements which have no content and no action - no point in showing them
+            if (!$isexpandable && empty($item->action)) {
+                continue;
+            }
+
+            $hasicon = ((!$isbranch || $item->type == navigation_node::TYPE_ACTIVITY || $item->type == navigation_node::TYPE_RESOURCE) && $item->icon instanceof renderable);
+
+            if ($hasicon) {
+                $icon = $this->output->render($item->icon);
+                // Because an icon is being used we're going to wrap the actual content in a span.
+                // This will allow designers to create columns for the content, as we've done in styles.css.
+                $content = $icon . html_writer::span($content, 'item-content-wrap');
+            } else {
+                $icon = '';
+            }
+
+            if ($item->helpbutton !== null) {
+                $content = trim($item->helpbutton).html_writer::tag('span', $content, array('class'=>'clearhelpbutton'));
+            }
+
+            if ($content === '') {
+                continue;
+            }
+
+            $nodetextid = 'label_' . $depth . '_' . $number;
+            $attributes = array('tabindex' => '-1', 'id' => $nodetextid);
+            if ($title !== '') {
+                $attributes['title'] = $title;
+            }
+            if ($item->hidden) {
+                $attributes['class'] = 'dimmed_text';
+            }
+            if (is_string($item->action) || empty($item->action) ||
+                    (($item->type === navigation_node::TYPE_CATEGORY || $item->type === navigation_node::TYPE_MY_CATEGORY) &&
+                    empty($options['linkcategories']))) {
+                $content = html_writer::tag('span', $content, $attributes);
+            } else if ($item->action instanceof action_link) {
+                //TODO: to be replaced with something else
+                $link = $item->action;
+                $link->text = $icon.html_writer::span($link->text, 'item-content-wrap');
+                $link->attributes = array_merge($link->attributes, $attributes);
+                $content = $this->output->render($link);
+            } else if ($item->action instanceof moodle_url) {
+                $content = html_writer::link($item->action, $content, $attributes);
+            }
+
+            // This applies to the li item which contains all child lists too.
+            $liclasses = array($item->get_css_type(), 'depth_'.$depth);
+
+            // Class attribute on the div item which only contains the item content.
+            $divclasses = array('tree_item');
+
+            $liexpandable = array();
+            $lirole = array('role' => 'treeitem');
+            if ($isbranch) {
+                $liclasses[] = 'contains_branch';
+                if ($depth == 1) {
+                    $liexpandable = array(
+                        'data-expandable' => 'false',
+                        'data-collapsible' => 'false'
+                    );
+                } else {
+                    $liexpandable = array(
+                        'aria-expanded' => ($item->has_children() &&
+                            (!$item->forceopen || $item->collapse)) ? "false" : "true");
+                }
+
+                if ($item->requiresajaxloading) {
+                    $liexpandable['data-requires-ajax'] = 'true';
+                    $liexpandable['data-loaded'] = 'false';
+                    $liexpandable['data-node-id'] = $item->id;
+                    $liexpandable['data-node-key'] = $item->key;
+                    $liexpandable['data-node-type'] = $item->type;
+                }
+
+                $divclasses[] = 'branch';
+            } else {
+                $divclasses[] = 'leaf';
+            }
+            if ($hasicon) {
+                // Add this class if the item has an icon, whether it is a branch or not.
+                $liclasses[] = 'item_with_icon';
+                $divclasses[] = 'hasicon';
+            }
+            if ($item->isactive === true) {
+                $liclasses[] = 'current_branch';
+            }
+            if (!empty($item->classes) && count($item->classes)>0) {
+                $divclasses[] = join(' ', $item->classes);
+            }
+
+            // Now build attribute arrays.
+            $liattr = array('class' => join(' ', $liclasses)) + $liexpandable + $lirole;
+            $divattr = array('class'=>join(' ', $divclasses));
+            if (!empty($item->id)) {
+                $divattr['id'] = $item->id;
+            }
+
+            // Create the structure.
+            $content = html_writer::tag('p', $content, $divattr);
+            if ($isexpandable) {
+                $children = $this->navigation_node($item->children, array('role' => 'group'), $expansionlimit,
+                    $options, $depth + 1);
+                if (!empty($children)) {
+                    $content = html_writer::empty_tag('hr') . $content;
+                }
+                $content .= $children;
+            }
+            if (!empty($item->preceedwithhr) && $item->preceedwithhr===true) {
+                $content = html_writer::empty_tag('hr') . $content;
+            }
+            if ($depth == 1) {
+                $liattr['tabindex'] = '0';
+            }
+            $liattr['aria-labelledby'] = $nodetextid;
+            #$content = html_writer::tag('li', $content, $liattr);
+            $lis[] = $content;
+        }
+
+        if (count($lis) === 0) {
+            // There is still a chance, despite having items, that nothing had content and no list items were created.
+            return '';
+        }
+
+        // We used to separate using new lines, however we don't do that now, instead we'll save a few chars.
+        // The source is complex already anyway.
+        #return html_writer::tag('ul', implode('', $lis), $attrs);
+        return implode('', $lis);
+    }
+
+}
+/**
+ * Override the renderer for block navigation
+ *
+ * @copyright 2016 John Okely <john@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class theme_shiny_block_navigation_renderer2 extends block_navigation_renderer {
+    /**
+     * Returns the content of the navigation tree.
+     *
+     * @param global_navigation $navigation
+     * @param int $expansionlimit
+     * @param array $options
+     * @return string $content
+     */
+    public function navigation_tree(global_navigation $navigation, $expansionlimit, array $options = array()) {
+        $navigation->add_class('navigation_node');
+        $navigationattrs = array(
+            'class' => 'block_tree list',
+            'role' => 'tree',
+            'data-ajax-loader' => 'block_navigation/nav_loader');
+        $content = $this->active_family(array($navigation), $navigationattrs, $expansionlimit, $options);
+        if (isset($navigation->id) && !is_numeric($navigation->id) && !empty($content)) {
+            $content = $this->output->box($content, 'block_tree_box', $navigation->id);
+        }
+        return $content;
+    }
+    /**
+     * Produces a navigation node for the navigation tree
+     *
+     * @param navigation_node[] $items
+     * @param array $attrs
+     * @param int $expansionlimit
+     * @param array $options
+     * @param int $depth
+     * @return string
+     */
+    protected function active_family($items, $attrs=array(), $expansionlimit=null, array $options = array(), $depth=1) {
+        if ($this->is_one_or_child_active($items)) {
+            // Render these only.
+            return $this->navigation_node($items, $attrs, $expansionlimit, $options, 1);
+        } else {
+            // Keep going recursively
+            $content = '';
+            foreach ($items as $item) {
+                $content .= $this->active_family($item->children, $attrs, $expansionlimit, $options, $depth + 1);
+            }
+            return $content;
+        }
+    }
+    private function is_one_or_child_active($items) {
+        if ($this->is_one_active($items)) {
+            return true;
+        }
+        foreach ($items as $item) {
+            if ($this->is_one_active($item->children)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private function is_one_active($items) {
+        foreach ($items as $item) {
+            if ($item->isactive) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Produces a navigation node for the navigation tree
+     *
+     * @param navigation_node[] $items
+     * @param array $attrs
+     * @param int $expansionlimit
+     * @param array $options
+     * @param int $depth
+     * @return string
+     */
+    protected function navigation_node($items, $attrs=array(), $expansionlimit=null, array $options = array(), $depth=1) {
+        // Exit if empty, we don't want an empty ul element.
+        if (count($items) === 0) {
+            return '';
+        }
+
+        // Turn our navigation items into list items.
+        $lis = array();
+        $number = 0;
+        foreach ($items as $item) {
+            $number++;
+            if (!$item->display && !$item->contains_active_node()) {
+                continue;
+            }
+            $content = $item->get_content();
+            $title = $item->get_title();
+
+            $isexpandable = (empty($expansionlimit) || ($item->type > navigation_node::TYPE_ACTIVITY || $item->type < $expansionlimit) || ($item->contains_active_node() && $item->children->count() > 0));
+            $isbranch = $isexpandable && ($item->children->count() > 0 || ($item->has_children() && (isloggedin() || $item->type <= navigation_node::TYPE_CATEGORY)));
+
+            // Skip elements which have no content and no action - no point in showing them
+            if (!$isexpandable && empty($item->action)) {
+                continue;
+            }
+
+            $hasicon = ((!$isbranch || $item->type == navigation_node::TYPE_ACTIVITY || $item->type == navigation_node::TYPE_RESOURCE) && $item->icon instanceof renderable);
+
+            if ($hasicon) {
+                $icon = $this->output->render($item->icon);
+                // Because an icon is being used we're going to wrap the actual content in a span.
+                // This will allow designers to create columns for the content, as we've done in styles.css.
+                $content = $icon . html_writer::span($content, 'item-content-wrap');
+            } else {
+                $icon = '';
+            }
+
+            if ($item->helpbutton !== null) {
+                $content = trim($item->helpbutton).html_writer::tag('span', $content, array('class'=>'clearhelpbutton'));
+            }
+
+            if ($content === '') {
+                continue;
+            }
+
+            $nodetextid = 'label_' . $depth . '_' . $number;
+            $attributes = array('tabindex' => '-1', 'id' => $nodetextid);
+            if ($title !== '') {
+                $attributes['title'] = $title;
+            }
+            if ($item->hidden) {
+                $attributes['class'] = 'dimmed_text';
+            }
+            if (is_string($item->action) || empty($item->action) ||
+                    (($item->type === navigation_node::TYPE_CATEGORY || $item->type === navigation_node::TYPE_MY_CATEGORY) &&
+                    empty($options['linkcategories']))) {
+                $content = html_writer::tag('span', $content, $attributes);
+            } else if ($item->action instanceof action_link) {
+                //TODO: to be replaced with something else
+                $link = $item->action;
+                $link->text = $icon.html_writer::span($link->text, 'item-content-wrap');
+                $link->attributes = array_merge($link->attributes, $attributes);
+                $content = $this->output->render($link);
+            } else if ($item->action instanceof moodle_url) {
+                $content = html_writer::link($item->action, $content, $attributes);
+            }
+
+            // This applies to the li item which contains all child lists too.
+            $liclasses = array($item->get_css_type(), 'depth_'.$depth);
+
+            // Class attribute on the div item which only contains the item content.
+            $divclasses = array('tree_item');
+
+            $liexpandable = array();
+            $lirole = array('role' => 'treeitem');
+            if ($isbranch) {
+                $liclasses[] = 'contains_branch';
+                if ($depth == 1) {
+                    $liexpandable = array(
+                        'data-expandable' => 'false',
+                        'data-collapsible' => 'false'
+                    );
+                } else {
+                    $liexpandable = array(
+                        'aria-expanded' => ($item->has_children() &&
+                            (!$item->forceopen || $item->collapse)) ? "false" : "true");
+                }
+
+                if ($item->requiresajaxloading) {
+                    $liexpandable['data-requires-ajax'] = 'true';
+                    $liexpandable['data-loaded'] = 'false';
+                    $liexpandable['data-node-id'] = $item->id;
+                    $liexpandable['data-node-key'] = $item->key;
+                    $liexpandable['data-node-type'] = $item->type;
+                }
+
+                $divclasses[] = 'branch';
+            } else {
+                $divclasses[] = 'leaf';
+            }
+            if ($hasicon) {
+                // Add this class if the item has an icon, whether it is a branch or not.
+                $liclasses[] = 'item_with_icon';
+                $divclasses[] = 'hasicon';
+            }
+            if ($item->isactive === true) {
+                $liclasses[] = 'current_branch';
+            }
+            if (!empty($item->classes) && count($item->classes)>0) {
+                $divclasses[] = join(' ', $item->classes);
+            }
+
+            // Now build attribute arrays.
+            $liattr = array('class' => join(' ', $liclasses)) + $liexpandable + $lirole;
+            $divattr = array('class'=>join(' ', $divclasses));
+            if (!empty($item->id)) {
+                $divattr['id'] = $item->id;
+            }
+
+            // Create the structure.
+            $content = html_writer::tag('p', $content, $divattr);
+            if ($isexpandable) {
+                $content .= $this->navigation_node($item->children, array('role' => 'group'), $expansionlimit,
+                    $options, $depth + 1);
+            }
+            if (!empty($item->preceedwithhr) && $item->preceedwithhr===true) {
+                $content = html_writer::empty_tag('hr') . $content;
+            }
+            if ($depth == 1) {
+                $liattr['tabindex'] = '0';
+            }
+            $liattr['aria-labelledby'] = $nodetextid;
+            $content = html_writer::tag('li', $content, $liattr);
+            $lis[] = $content;
+        }
+
+        if (count($lis) === 0) {
+            // There is still a chance, despite having items, that nothing had content and no list items were created.
+            return '';
+        }
+
+        // We used to separate using new lines, however we don't do that now, instead we'll save a few chars.
+        // The source is complex already anyway.
+        return html_writer::tag('ul', implode('', $lis), $attrs);
+    }
+
+}
+
+class theme_shiny_core_user_myprofile_renderer extends \core_user\output\myprofile\renderer {
+    public function render_tree(core_user\output\myprofile\tree $tree) {
+        return $this->context_header() . \core_user\output\myprofile\renderer::render_tree($tree);
     }
 }

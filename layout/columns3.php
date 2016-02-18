@@ -34,13 +34,13 @@ $html = theme_shiny_get_html_for_settings($OUTPUT, $PAGE);
 // Set default (LTR) layout mark-up for a three column page.
 $regionmainbox = 'span9';
 $regionmain = 'span8 pull-right';
-$sidepre = 'span4 desktop-first-column';
-$sidepost = 'span3 pull-right';
+$sidepre = 'span4 desktop-first-column collapsable collapsed';
+$sidepost = 'span4 pull-right';
 // Reset layout mark-up for RTL languages.
 if (right_to_left()) {
     $regionmainbox = 'span9 pull-right';
     $regionmain = 'span8';
-    $sidepre = 'span4 pull-right';
+    $sidepre = 'span4 pull-right collapsable collapsed';
     $sidepost = 'span3 desktop-first-column';
 }
 
@@ -60,6 +60,7 @@ echo $OUTPUT->doctype() ?>
 <header role="banner" class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
     <nav role="navigation" class="navbar-inner">
         <div class="container-fluid">
+            <a href="#" class="hamburger" id="navbar-hamburger"><i class="fa fa-bars"></i></a>
             <?php echo $OUTPUT->navbar_home(); ?>
             <?php echo $OUTPUT->navbar_button(); ?>
             <?php echo $OUTPUT->user_menu(); ?>
@@ -73,12 +74,13 @@ echo $OUTPUT->doctype() ?>
     </nav>
 </header>
 
+<?php echo $OUTPUT->settings_fab(); ?>
 <div id="page" class="container-fluid">
-    <?php echo $OUTPUT->full_header(); ?>
     <div id="page-content" class="row-fluid">
         <div id="region-main-box" class="<?php echo $regionmainbox; ?>">
             <div class="row-fluid">
                 <section id="region-main" class="<?php echo $regionmain; ?>">
+                    <?php echo $OUTPUT->full_header(); ?>
                     <?php
                     echo $OUTPUT->course_content_header();
                     echo $OUTPUT->main_content();

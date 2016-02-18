@@ -66,9 +66,9 @@ echo $OUTPUT->doctype() ?>
 <?php echo $OUTPUT->settings_fab(); ?>
 
 <div id="page" class="container-fluid">
-    <?php echo $OUTPUT->full_header(); ?>
     <div id="page-content" class="row-fluid">
         <section id="region-main" class="<?php echo $regionmain; ?>">
+            <?php echo $OUTPUT->full_header(); ?>
             <?php
             echo $OUTPUT->course_content_header();
             echo $OUTPUT->main_content();

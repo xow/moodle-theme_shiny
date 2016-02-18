@@ -31,20 +31,34 @@ require(['jquery'], function($) {
         this.hamburger = $(hamburger);
         this.menu = $(menu);
         this.content = $(content);
+        this.expanded = false;
+        if (localStorage.getItem("hamburger_expanded") == 'true') {
+            this.expanded = true;
+            this.expand();
+        }
 
         this.bindEventHandlers();
     };
     Hamburger.prototype.handleClick = function(hamburger, e) {
-        this.menu.toggleClass('collapsed');
-        if (this.content.hasClass('span12')) {
-            this.content.addClass('span9');
-            this.content.removeClass('span12');
+        if (this.expanded) {
+            this.collapse();
         } else {
-            this.content.addClass('span12');
-            this.content.removeClass('span9');
+            this.expand();
         }
+        this.expanded = !this.expanded;
+        localStorage.setItem("hamburger_expanded", this.expanded);
         e.stopPropagation();
         return true;
+    }
+    Hamburger.prototype.expand = function() {
+        this.content.addClass('span9');
+        this.content.removeClass('span12');
+        this.menu.removeClass('collapsed');
+    }
+    Hamburger.prototype.collapse = function() {
+        this.content.addClass('span12');
+        this.content.removeClass('span9');
+        this.menu.addClass('collapsed');
     }
     Hamburger.prototype.bindEventHandlers = function() {
         var thisObj = this;

@@ -88,11 +88,13 @@ body {
 }
 
 #region-main {
-    .well;
     padding-left: 3em;
     padding-right: 3em;
     transition: height 1s;
     transition: width 1s;
+    div[role=main] {
+        .well;
+    }
 }
 
 .userpicture {
@@ -118,4 +120,32 @@ aside.collapsable.collapsed {
     position: fixed;
     right: 0px;
     top: 96px;
+}
+.container-fluid {
+    max-width: none;
+}
+.breadcrumb-nav .breadcrumb {
+    .material-shadow;
+    background-color: #fefefe;
+    border: none;
+}
+input[type="submit"] {
+    .material-shadow;
+    background-color: #FFFFFF;
+    background-image: none;
+    border: none;
+}
+input#adminsearchquery {
+    background: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 3px;
+    border-bottom-style: solid;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-color: #fff;
+    box-shadow: none;
+}
+.material-shadow {
+    .box-shadow(0 1px 4px 0 rgba(0,0,0,0.14));
 }

@@ -165,14 +165,21 @@ class theme_shiny_block_settings_renderer extends block_settings_renderer {
     public function settings_tree(settings_navigation $navigation) {
         global $PAGE;
         if ($PAGE->pagelayout == 'admin') {
-            return block_settings_renderer::settings_tree($navigation);
+            return $this->tree_siblings_only($navigation);
         }
         $data = new stdClass();
         $data->siteadminlink = new moodle_url('/admin/index.php');
         return $this->render_from_template('block_settings/administration_link', $data);
     }
-    public function search_form(moodle_url $formtarget, $searchvalue) {
-        return '';
+    private function tree_siblings_only(settings_navigation $navigation) {
+        return block_settings_renderer::settings_tree($navigation);;
     }
-
+    public function search_form(moodle_url $formtarget, $searchvalue) {
+        global $PAGE;
+        if ($PAGE->pagelayout == 'admin') {
+            return block_settings_renderer::search_form($formtarget, $searchvalue);
+        } else {
+            return '';
+        }
+    }
 }

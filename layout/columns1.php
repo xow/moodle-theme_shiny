@@ -18,7 +18,7 @@
  * The one column layout.
  *
  * @package   theme_shiny
- * @copyright 2013 Moodle, moodle.org
+ * @copyright 2016 John Okely <john@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

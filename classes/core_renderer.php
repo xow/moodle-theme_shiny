@@ -162,37 +162,108 @@ require_once($CFG->dirroot . "/blocks/settings/renderer.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class theme_shiny_block_settings_renderer extends block_settings_renderer {
-    public function settings_tree(settings_navigation $navigation) {
-        global $PAGE;
-        if ($PAGE->pagelayout == 'admin') {
-            $count = 0;
-            foreach ($navigation->children as &$child) {
-                $child->preceedwithhr = ($count!==0);
-                if ($child->display) {
-                    $count++;
-                }
-            }
-            $navigationattrs = array(
-                'class' => 'block_tree list',
-                'role' => 'tree',
-                'data-ajax-loader' => 'block_navigation/site_admin_loader');
-            $content = $this->navigation_node($navigation, $navigationattrs);
-            if (isset($navigation->id) && !is_numeric($navigation->id) && !empty($content)) {
-                $content = $this->output->box($content, 'block_tree_box', $navigation->id);
-            }
-            return $content;
+    protected function navigation_node(navigation_node $node, $attrs=array(), $depth = 1) {
+        $items = $node->children;
+
+        // exit if empty, we don't want an empty ul element
+        if ($items->count()==0) {
+            return '';
         }
-        $data = new stdClass();
-        $data->siteadminlink = new moodle_url('/admin/index.php');
-        return $this->render_from_template('block_settings/administration_link', $data);
+
+        // array of nested li elements
+        $lis = array();
+        $number = 0;
+        foreach ($items as $item) {
+            $number++;
+            if (!$item->display) {
+                continue;
+            }
+
+            $isbranch = ($item->children->count()>0  || $item->nodetype==navigation_node::NODETYPE_BRANCH);
+            $hasicon = (!$isbranch && $item->icon instanceof renderable);
+
+            if ($isbranch) {
+                $item->hideicon = true;
+            }
+            $content = $this->output->render($item);
+
+            // this applies to the li item which contains all child lists too
+            $liclasses = array($item->get_css_type());
+            $liexpandable = array();
+            if ($isbranch) {
+                $liclasses[] = 'contains_branch';
+                if (!$item->forceopen || (!$item->forceopen && $item->collapse) || ($item->children->count() == 0
+                        && $item->nodetype == navigation_node::NODETYPE_BRANCH)) {
+                    $liexpandable = array('aria-expanded' => 'false');
+                } else {
+                    $liexpandable = array('aria-expanded' => 'true');
+                }
+                if ($item->requiresajaxloading) {
+                    $liexpandable['data-requires-ajax'] = 'true';
+                    $liexpandable['data-loaded'] = 'false';
+                }
+
+            } else if ($hasicon) {
+                $liclasses[] = 'item_with_icon';
+            }
+            if ($item->isactive === true) {
+                $liclasses[] = 'current_branch';
+            }
+            $nodetextid = 'label_' . $depth . '_' . $number;
+            $liattr = array('class' => join(' ', $liclasses), 'tabindex' => '-1', 'role' => 'treeitem') + $liexpandable;
+            // class attribute on the div item which only contains the item content
+            $divclasses = array('tree_item');
+            if ($isbranch) {
+                $divclasses[] = 'branch';
+            } else {
+                $divclasses[] = 'leaf';
+            }
+            if (!empty($item->classes) && count($item->classes)>0) {
+                $divclasses[] = join(' ', $item->classes);
+            }
+            $divattr = array('class'=>join(' ', $divclasses));
+            if (!empty($item->id)) {
+                $divattr['id'] = $item->id;
+            }
+            $content = html_writer::tag('p', $content, $divattr) . $this->navigation_node($item, array(), $depth + 1);
+            if (!empty($item->preceedwithhr) && $item->preceedwithhr===true) {
+                $content = html_writer::empty_tag('hr') . $content;
+            }
+            $liattr['aria-labelledby'] = $nodetextid;
+            $content = html_writer::tag('li', $content, $liattr);
+            // Only render the proper site admin node if needed
+            $adminnode = $item->key == 'siteadministration' && $item->type === navigation_node::TYPE_SITE_ADMIN;
+            if ($adminnode && !$this->is_admin_tree_needed()) {
+                $data = new stdClass();
+                $data->siteadminlink = new moodle_url('/admin/index.php');
+                $lis[] = $this->render_from_template('theme_shiny/administration_link', $data);
+            } else {
+                $lis[] = $content;
+            }
+        }
+
+        if (count($lis)) {
+            if (empty($attrs['role'])) {
+                $attrs['role'] = 'group';
+            }
+            return html_writer::tag('ul', implode("\n", $lis), $attrs);
+        } else {
+            return '';
+        }
     }
     public function search_form(moodle_url $formtarget, $searchvalue) {
         global $PAGE;
-        if ($PAGE->pagelayout == 'admin') {
+        if ($this->is_admin_tree_needed()) {
             return block_settings_renderer::search_form($formtarget, $searchvalue);
         } else {
             return '';
         }
+    }
+    private function is_admin_tree_needed() {
+        $adminlayout = $this->page->pagelayout == 'admin';
+        $adminpagetype = strpos($this->page->pagetype, 'admin-') == 0;
+        $systemcontext = $this->page->context->contextlevel == CONTEXT_SYSTEM;
+        return ($adminlayout || $adminpagetype) && $systemcontext;
     }
 }
 class theme_shiny_block_settings_renderer2 extends block_settings_renderer {

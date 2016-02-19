@@ -81,4 +81,13 @@ if ($ADMIN->fulltree) {
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
+
+    // Nav bar color setting.
+    $name = 'theme_shiny/primarycolour';
+    $title = get_string('primarycolour', 'theme_shiny');
+    $description = get_string('primarycolourdesc', 'theme_shiny');
+    $default = '#f98012';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $settings->add($setting);
 }

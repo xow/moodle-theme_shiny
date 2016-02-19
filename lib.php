@@ -178,3 +178,11 @@ function shiny_set_logo() {
 function shiny_set_customcss() {
     throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
 }
+
+function theme_shiny_less_variables($theme) {
+    $variables = array();
+    if (!empty($theme->settings->primarycolour)) {
+        $variables['colour-primary'] = $theme->settings->primarycolour;
+    }
+    return $variables;
+}

@@ -25,7 +25,7 @@ require(['jquery'], function($) {
     var SELECTORS = {
         HAMBURGER: '#navbar-hamburger',
         MENU: '#block-region-side-pre',
-        CONTENT: '#region-main'
+        CONTENT: '#page'
     };
     var Hamburger = function(hamburger, menu, content) {
         this.hamburger = $(hamburger);
@@ -33,8 +33,22 @@ require(['jquery'], function($) {
         this.content = $(content);
         this.expanded = false;
         if (localStorage.getItem("hamburger_expanded") == 'true') {
+            var oldMenuTransition = this.menu.css('transition');
+            this.menu.css('transition', 'none');
+            var oldContentTransition = this.content.css('transition');
+            this.content.css('transition', 'none');
+
             this.expanded = true;
+
             this.expand();
+
+            var menu = this.menu;
+            var content = this.content;
+            window.setTimeout(function () {
+                console.log(oldMenuTransition);
+                menu.css('transition', oldMenuTransition);
+                content.css('transition', oldContentTransition);
+            }, 300);
         }
 
         this.bindEventHandlers();
@@ -51,14 +65,12 @@ require(['jquery'], function($) {
         return true;
     }
     Hamburger.prototype.expand = function() {
-        this.content.addClass('span9');
-        this.content.removeClass('span12');
         this.menu.removeClass('collapsed');
+        this.content.css('margin-left', '300px');
     }
     Hamburger.prototype.collapse = function() {
-        this.content.addClass('span12');
-        this.content.removeClass('span9');
         this.menu.addClass('collapsed');
+        this.content.css('margin-left',  '0px');
     }
     Hamburger.prototype.bindEventHandlers = function() {
         var thisObj = this;

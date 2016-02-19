@@ -32,15 +32,15 @@
 $html = theme_shiny_get_html_for_settings($OUTPUT, $PAGE);
 
 // Set default (LTR) layout mark-up for a three column page.
-$regionmainbox = 'span9';
-$regionmain = 'span8 pull-right';
-$sidepre = 'span4 desktop-first-column collapsable collapsed';
+$regionmainbox = 'span8';
+$regionmain = 'span12 pull-right';
+$sidepre = 'desktop-first-column collapsable collapsed';
 $sidepost = 'span4 pull-right';
 // Reset layout mark-up for RTL languages.
 if (right_to_left()) {
-    $regionmainbox = 'span9 pull-right';
-    $regionmain = 'span8';
-    $sidepre = 'span4 pull-right collapsable collapsed';
+    $regionmainbox = 'span8 pull-right';
+    $regionmain = 'span12';
+    $sidepre = 'pull-right collapsable collapsed';
     $sidepost = 'span3 desktop-first-column';
 }
 
@@ -74,7 +74,6 @@ echo $OUTPUT->doctype() ?>
     </nav>
 </header>
 
-<?php echo $OUTPUT->settings_fab(); ?>
 <div id="page" class="container-fluid">
     <div id="page-content" class="row-fluid">
         <div id="region-main-box" class="<?php echo $regionmainbox; ?>">
@@ -87,9 +86,9 @@ echo $OUTPUT->doctype() ?>
                     echo $OUTPUT->course_content_footer();
                     ?>
                 </section>
-                <?php echo $OUTPUT->blocks('side-pre', $sidepre); ?>
             </div>
         </div>
+        <?php echo $OUTPUT->blocks('side-pre', $sidepre); ?>
         <?php echo $OUTPUT->blocks('side-post', $sidepost); ?>
     </div>
 
@@ -98,8 +97,6 @@ echo $OUTPUT->doctype() ?>
         <p class="helplink"><?php echo $OUTPUT->page_doc_link(); ?></p>
         <?php
         echo $html->footnote;
-        echo $OUTPUT->login_info();
-        echo $OUTPUT->home_link();
         echo $OUTPUT->standard_footer_html();
         ?>
     </footer>
@@ -107,5 +104,6 @@ echo $OUTPUT->doctype() ?>
     <?php echo $OUTPUT->standard_end_of_body_html() ?>
 
 </div>
+<?php echo $OUTPUT->settings_fab(); ?>
 </body>
 </html>

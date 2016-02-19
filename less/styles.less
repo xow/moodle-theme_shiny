@@ -1,8 +1,11 @@
 @import "../../bootstrapbase/less/moodle.less";
 @import "font-awesome/font-awesome.less";
 
+
+@colour-primary: #f98012;
+
 body {
-    padding-top: 75px;
+    padding-top: 92px;
     background-color: #f8f8f8;
     font-family: 'Open Sans', sans-serif;
     font-size: 1em;
@@ -17,7 +20,7 @@ body {
 
 .navbar-inner {
     background-image: none;
-    background-color: #f98012;
+    background-color: @colour-primary;
 }
 .navbar .brand {
     text-shadow: none;
@@ -52,7 +55,7 @@ body {
 }
 
 .jsenabled .usermenu .moodle-actionmenu.show {
-    background-color: #FF9230;
+    background-color: lighten(@colour-primary, 15%);
 }
 
 aside#block-region-side-pre {
@@ -64,25 +67,39 @@ aside#block-region-side-pre {
     overflow: scroll;
     box-sizing: border-box;
     width: 280px;
+    float: left;
+    background-color: #f8f8f8;
     .block div.header {
         display: none;
     }
-    float: left;
-}
-#block-region-side-pre .block {
-    .notblock;
-    background-color: transparent;
-}
-#block-region-side-pre li {
-    padding: 0.5em;
-}
-#block-region-side-pre a {
-    color: #666;
-    &:hover {
-        text-decoration: none;
+    .block {
+        .notblock;
+    }
+    li {
+        padding: 0.5em;
+    }
+    a {
+        color: #666;
+        &:hover {
+            text-decoration: none;
+        }
     }
 }
+aside#block-region-side-post {
+    position: fixed;
+    height: 100vh;
+    overflow: scroll;
+    right: 0px;
+    background-color: #f8f8f8;
+}
 
+.notwell {
+    border: none;
+    box-shadow: none;
+    margin: 0px;
+    padding: 0px;
+    background-color: transparent;
+}
 .notblock {
     border: none;
     box-shadow: none;
@@ -93,10 +110,20 @@ aside#block-region-side-pre {
 #region-main {
     padding-left: 3em;
     padding-right: 3em;
-    transition: height 0.3s;
-    transition: width 0.3s;
     div[role=main] {
         .well;
+    }
+}
+#page-my-index #region-main div[role=main] {
+    .notwell;
+    .block {
+        .notwell;
+        .header {
+            display: none;
+        }
+        .content {
+            padding: 0px;
+        }
     }
 }
 
@@ -104,25 +131,28 @@ aside#block-region-side-pre {
     border-radius: 50%;
 }
 
+#page {
+    transition: margin-left 0.3s;
+}
 aside.collapsable {
     position: fixed;
     left: 0%;
     transition: left 0.3s;
 }
 aside.collapsable.collapsed {
-    left: -23.40425532%;
+    left: -280px;
 }
 #navbar-settings {
     float: right;
     font-size: 2em;
     color: #fff;
-    background-color: #f98012;
+    background-color: @colour-primary;
     border-radius: 50%;
     padding: 0.6em;
     .box-shadow(0 1px 8px 0 rgba(0,0,0,0.2));
     position: fixed;
-    right: 0px;
-    top: 96px;
+    right: 16px;
+    top: 80px;
 }
 .container-fluid {
     max-width: none;
@@ -138,7 +168,7 @@ input[type="submit"] {
     background-image: none;
     border: none;
 }
-input#adminsearchquery {
+input[type="text"] {
     background: transparent;
     outline: none;
     border: none;
@@ -148,20 +178,7 @@ input#adminsearchquery {
     border-bottom-right-radius: 0px;
     border-color: #fff;
     width: 128px;
-    &:after {
-        content: "";
-        width: 150px;
-        height: 1px;
-        margin-top: 88px;
-        margin-left: -75px;
-        display: block;
-        position: absolute;
-        left: 50%;
-        z-index: -1;
-        -webkit-box-shadow: 0px 0px 8px 2px #000000;
-           -moz-box-shadow: 0px 0px 8px 2px #000000;
-                box-shadow: 0px 0px 8px 2px #000000;
-    }
+    .material-shadow;
 }
 .material-shadow {
     .box-shadow(0 1px 4px 0 rgba(0,0,0,0.14));

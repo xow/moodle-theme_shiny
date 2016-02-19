@@ -61,6 +61,9 @@ $string['logodesc'] = 'The logo is only displayed in the header of the front pag
 
 $string['pluginname'] = 'Shiny';
 
+$string['primarycolour'] = 'Primary colour';
+$string['primarycolourdesc'] = 'Set the primary colour for your theme that will be used for the nav bar and most colours around the site';
+
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
 

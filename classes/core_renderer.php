@@ -150,6 +150,17 @@ class theme_shiny_core_renderer extends theme_bootstrapbase_core_renderer {
     public function edit_button(moodle_url $url) {
         return '';
     }
+    public function hamburger() {
+        return '<a href="#" class="hamburger nav-icon nav-icon-large" id="navbar-hamburger"><i class="fa fa-bars"></i></a>';
+    }
+    public function user_menu($user = null, $withlinks = null) {
+        $output = '';
+        $messageurl = new moodle_url('/message/index.php');
+        $output .= '<a href="#" class="nav-icon nav-icon"><i class="fa fa-globe"></i></a>';
+        $output .= '<a href="' . $messageurl->out() . '" class="nav-icon nav-icon"><i class="fa fa-envelope"></i></a>';
+        $output .= core_renderer::user_menu($user, $withlinks);
+        return $output;
+    }
 }
 
 require_once($CFG->dirroot . "/blocks/settings/renderer.php");

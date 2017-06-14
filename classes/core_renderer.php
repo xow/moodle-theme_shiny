@@ -156,7 +156,7 @@ class theme_shiny_core_renderer extends theme_bootstrapbase_core_renderer {
     public function user_menu($user = null, $withlinks = null) {
         $output = '';
         $messageurl = new moodle_url('/message/index.php');
-        $output .= '<a href="#" class="nav-icon nav-icon"><i class="fa fa-globe"></i></a>';
+        // $output .= '<a href="#" class="nav-icon nav-icon"><i class="fa fa-globe"></i></a>'; TODO Notifications once they are added to core.
         $output .= '<a href="' . $messageurl->out() . '" class="nav-icon nav-icon"><i class="fa fa-envelope"></i></a>';
         $output .= core_renderer::user_menu($user, $withlinks);
         return $output;
@@ -173,7 +173,7 @@ require_once($CFG->dirroot . "/blocks/settings/renderer.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class theme_shiny_block_settings_renderer extends block_settings_renderer {
-    protected function navigation_node(navigation_node $node, $attrs=array(), $depth = 1) {
+    protected function navigation_node2(navigation_node $node, $attrs=array(), $depth = 1) {
         $items = $node->children;
 
         // exit if empty, we don't want an empty ul element

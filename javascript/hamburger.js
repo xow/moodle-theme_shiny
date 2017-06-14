@@ -25,7 +25,7 @@ require(['jquery'], function($) {
     var SELECTORS = {
         HAMBURGER: '#navbar-hamburger',
         MENU: '#block-region-side-pre',
-        CONTENT: '#page'
+        CONTENT: '.contentholder'
     };
     var Hamburger = function(hamburger, menu, content) {
         this.hamburger = $(hamburger);
